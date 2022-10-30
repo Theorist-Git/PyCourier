@@ -1,1 +1,1 @@
-MailMan: A simple, reliable and fast email package for python
+## MailMan: A simple, reliable and fast email package for python
