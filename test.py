@@ -1,4 +1,6 @@
 from mail_man import MailMan
+import threading
+import time
 
 sender = "---"
 password = "---"
@@ -467,6 +469,33 @@ mailman_3 = MailMan(
     encryption_password="123",
 )
 
-mailman_1.send_mail()
-mailman_2.send_mail()
-mailman_3.send_mail()
+# start = time.time()
+# mailman_1.send_mail()
+# mailman_2.send_mail()
+# mailman_3.send_mail()
+# end = time.time()
+# Time w/o multithreading/processing =  20.64133882522583s
+
+
+def mail1():
+    mailman_1.send_mail()
+
+
+def mail2():
+    mailman_2.send_mail()
+
+
+def mail3():
+    mailman_3.send_mail()
+
+
+x = threading.Thread(target=mail1)
+y = threading.Thread(target=mail2)
+z = threading.Thread(target=mail3)
+start = time.time()
+x.start()
+y.start()
+z.start()
+end = time.time()
+print("Time w/ multithreading = ", end - start)
+# 8s (Less than half)
