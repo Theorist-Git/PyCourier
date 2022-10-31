@@ -1,8 +1,12 @@
-from mail_man import MailMain
+from mail_man import MailMan
 
 sender = "---"
 password = "---"
-receiver = "---"
+recipients = [
+    "addr1@eg.com",
+    "addr2@eg.com",
+]
+
 
 # Example of a plain-text email with no attachments
 message_1 = """\
@@ -10,10 +14,10 @@ My name is Mayank Vats,
 This is working fine,
 MailMan delivered!!.
 """
-mailman_1 = MailMain(
+mailman_1 = MailMan(
     sender_email=sender,
     sender_password=password,
-    receiver_email=receiver,
+    recipients=recipients,
     message=message_1,
     msg_type="plain",
     subject="Mail Man Test-1 (Plain-Text Message)",
@@ -430,13 +434,13 @@ message_2 = """\
 </html>
 
 """
-mailman_2 = MailMain(
+mailman_2 = MailMan(
     sender_email=sender,
     sender_password=password,
-    receiver_email=receiver,
+    recipients=recipients,
     message=message_2,
     msg_type="html",
-    subject="Mail Man Test-3 (HTML Message w/ attachment)",
+    subject="Mail Man Test-2 (HTML Message w/ attachment)",
     attachments=[
         r'~\Projects\MailMan\.gitignore',
         r'~\Projects\MailMan\license.txt',
@@ -445,20 +449,22 @@ mailman_2 = MailMain(
     ]
 )
 
-mailman_3 = MailMain(
+mailman_3 = MailMan(
     sender_email=sender,
     sender_password=password,
-    receiver_email=receiver,
+    recipients=recipients,
     message=message_2,
     msg_type="html",
-    subject="Mail Man Test-2 (HTML Message w/  encrypted attachment)",
+    subject="Mail Man Test-3 (HTML Message w/  encrypted attachment)",
     attachments=[
-        r'~\Projects\MailMan\.gitignore',
-        r'~\Projects\MailMan\license.txt',
-        r'~\Projects\MailMan\README.md',
-        r'~\Projects\MailMan\BITS application form.pdf',
+        r'~\MailMan\.gitignore',
+        r'~\MailMan\license.txt',
+        r'~\MailMan\README.md',
+        r'~\MailMan\BITS application form.pdf',
+        r'~\MailMan\CamScanner 09-10-2022 13.51.pdf',
     ],
-    encrypt_attachments=True            # Only works for PDFs
+    encrypt_attachments=True,           # Only works for PDFs
+    encryption_password="123",
 )
 
 mailman_1.send_mail()

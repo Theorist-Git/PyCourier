@@ -18,12 +18,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
 __Description__ = "MailMan: A simple, reliable and fast email package for python"
-__version__ = "0.0.4alpha"
+__version__ = "0.0.5alpha"
 
 """
 
 
-class MailMain:
+class MailMan:
     supported_msg_types = [
         "plain",
         "html"
@@ -33,7 +33,7 @@ class MailMain:
             self,
             sender_email: str,
             sender_password: str,
-            receiver_email: str,
+            recipients: list,
             message: str,
             msg_type: str,
             subject: str,
@@ -44,7 +44,7 @@ class MailMain:
 
         self.sender_email = sender_email
         self.sender_password = sender_password
-        self.receiver_email = receiver_email
+        self.recipients = recipients
         self.message = message
         self.msg_type = msg_type
         self.subject = subject
@@ -59,7 +59,7 @@ class MailMain:
 
         return f"""\033[95mClass MailMan:\033[0m
 \033[92mSender Email:\033[0m {self.sender_email},
-\033[92mReceiver Email:\033[0m {self.receiver_email},
+\033[92mReceiver Email:\033[0m {self.recipients},
 \033[92mMessage Type:\033[0m {self.msg_type},
 \033[92mSubject:\033[0m {self.subject}
         """
@@ -72,12 +72,12 @@ class MailMain:
 
         sender_email = self.sender_email
         sender_password = self.sender_password
-        receiver_email = self.receiver_email
+        recipients = self.recipients
 
         msg = MIMEMultipart()
         msg["Subject"] = self.subject
         msg["From"] = sender_email
-        msg["To"] = receiver_email
+        msg["To"] = ', '.join(recipients)
 
         msg.attach(MIMEText(self.message, self.msg_type))
 
@@ -119,7 +119,7 @@ class MailMain:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
             server.login(sender_email, sender_password)
             server.sendmail(
-                sender_email, receiver_email, msg.as_string()
+                sender_email, recipients, msg.as_string()
             )
 
     @staticmethod
