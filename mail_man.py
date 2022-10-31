@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
 __Description__ = "MailMan: A simple, reliable and fast email package for python"
-__version__ = "0.0.2alpha"
+__version__ = "0.0.3alpha"
 
 """
 
@@ -37,7 +37,8 @@ class MailMain:
             message: str,
             msg_type: str,
             subject: str,
-            attachments: list = None
+            attachments: list = None,
+            encrypt_attachments: bool = False
     ):
 
         self.sender_email = sender_email
@@ -47,6 +48,7 @@ class MailMain:
         self.msg_type = msg_type
         self.subject = subject
         self.attachments = attachments
+        self.encrypt_attachments = encrypt_attachments
 
         if msg_type not in self.supported_msg_types:
             raise TypeError("\033[91mUnsupported message type\033[0m")
@@ -85,22 +87,70 @@ class MailMain:
                 file_name = file_path.split('\\')[-1]
                 # Open file in binary mode
                 with open(file_path, "rb") as attachment:
-                    # Add file as application/octet-stream
-                    # Email client can usually download this automatically as attachment
-                    part = MIMEBase("application", "octet-stream")
-                    part.set_payload(attachment.read())
+                    if self.encrypt_attachments:
+                        if self.attachments[i].lower().endswith('.pdf'):
+                            from PyPDF2 import PdfReader, PdfWriter
+                            # Create reader and writer object
+                            reader = PdfReader(file_name)
+                            writer = PdfWriter()
 
-                # Encode file in ASCII characters to send by email
-                encoders.encode_base64(part)
+                            # Add all pages to the writer
+                            for page in reader.pages:
+                                writer.add_page(page)
 
-                # Add header as key/value pair to attachment part
-                part.add_header(
-                    "Content-Disposition",
-                    f"attachment; filename= {file_name}",
-                )
+                            # Add a password to the new PDF
+                            writer.encrypt("my-secret-password")
 
-                # Add attachment to message and convert message to string
-                msg.attach(part)
+                            # Save the new PDF to a file
+                            with open(f"encrypted_{file_name}", "wb+") as f:
+                                writer.write(f)
+
+                            with open(f"encrypted_{file_name}", "rb") as f:
+                                # Add file as application/octet-stream
+                                # Email client can usually download this automatically as attachment
+                                part = MIMEBase("application", "octet-stream")
+                                part.set_payload(f.read())
+                                # Encode file in ASCII characters to send by email
+                                encoders.encode_base64(part)
+
+                                # Add header as key/value pair to attachment part
+                                part.add_header(
+                                    "Content-Disposition",
+                                    f"attachment; filename= encrypted_{file_name}",
+                                )
+
+                                # Add attachment to message and convert message to string
+                                msg.attach(part)
+                        else:
+                            print("Can only encrypt pdfs!")
+                            part = MIMEBase("application", "octet-stream")
+                            part.set_payload(attachment.read())
+                            # Encode file in ASCII characters to send by email
+                            encoders.encode_base64(part)
+                            # Add header as key/value pair to attachment part
+                            part.add_header(
+                                "Content-Disposition",
+                                f"attachment; filename= {file_name}",
+                            )
+
+                            # Add attachment to message and convert message to string
+                            msg.attach(part)
+                    else:
+                        # Add file as application/octet-stream
+                        # Email client can usually download this automatically as attachment
+                        part = MIMEBase("application", "octet-stream")
+                        part.set_payload(attachment.read())
+                        # Encode file in ASCII characters to send by email
+                        encoders.encode_base64(part)
+
+                        # Add header as key/value pair to attachment part
+                        part.add_header(
+                            "Content-Disposition",
+                            f"attachment; filename= {file_name}",
+                        )
+
+                        # Add attachment to message and convert message to string
+                        msg.attach(part)
 
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:

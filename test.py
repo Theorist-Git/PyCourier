@@ -436,7 +436,7 @@ mailman_2 = MailMain(
     receiver_email=receiver,
     message=message_2,
     msg_type="html",
-    subject="Mail Man Test-2 (HTML Message w/ attachment)",
+    subject="Mail Man Test-3 (HTML Message w/ attachment)",
     attachments=[
         r'~\Projects\MailMan\.gitignore',
         r'~\Projects\MailMan\license.txt',
@@ -445,5 +445,22 @@ mailman_2 = MailMain(
     ]
 )
 
+mailman_3 = MailMain(
+    sender_email=sender,
+    sender_password=password,
+    receiver_email=receiver,
+    message=message_2,
+    msg_type="html",
+    subject="Mail Man Test-2 (HTML Message w/  encrypted attachment)",
+    attachments=[
+        r'~\Projects\MailMan\.gitignore',
+        r'~\Projects\MailMan\license.txt',
+        r'~\Projects\MailMan\README.md',
+        r'~\Projects\MailMan\BITS application form.pdf',
+    ],
+    encrypt_attachments=True            # Only works for PDFs
+)
+
 mailman_1.send_mail()
 mailman_2.send_mail()
+mailman_3.send_mail()
