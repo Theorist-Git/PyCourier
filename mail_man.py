@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
 __Description__ = "MailMan: A simple, reliable and fast email package for python"
-__version__ = "0.0.7alpha"
+__version__ = "0.0.8alpha"
 
 """
 
@@ -136,7 +136,7 @@ class MailMan:
                                             compression=ZIP_LZMA,
                                             encryption=WZ_AES) as zf:
                                 zf.setpassword(secret_password)
-                                zf.write(file_path)
+                                zf.write(file_path, file_name)
                             with open(path, "rb") as f:
                                 self.attach_file(f, f"Encrypted_{non_pdf_filename}", msg)
                     else:
