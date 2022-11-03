@@ -80,7 +80,8 @@ message_2 = """\
         width: 100%;
       }
 
-      /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
+      /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also 
+      shrink down on a phone or something */
       .container {
         display: block;
         margin: 0 auto !important;
@@ -381,7 +382,8 @@ message_2 = """\
                     <tr>
                       <td>
                         <p>Hi there,</p>
-                        <p>Sometimes you just want to send a simple HTML email with a simple design and clear call to action. This is it.</p>
+                        <p>Sometimes you just want to send a simple HTML email with a simple design and clear call to 
+                        action. This is it.</p>
                         <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                           <tbody>
                             <tr>
@@ -397,7 +399,8 @@ message_2 = """\
                             </tr>
                           </tbody>
                         </table>
-                        <p>This is a really simple email template. Its sole purpose is to get the recipient to click the button with no distractions.</p>
+                        <p>This is a really simple email template. Its sole purpose is to get the recipient to click the
+                         button with no distractions.</p>
                         <p>Good luck! Hope it works.</p>
                       </td>
                     </tr>
@@ -444,10 +447,11 @@ mailman_2 = MailMan(
     msg_type="html",
     subject="Mail Man Test-2 (HTML Message w/ attachment)",
     attachments=[
-        r'~\Projects\MailMan\.gitignore',
-        r'~\Projects\MailMan\license.txt',
-        r'~\Projects\MailMan\mail_man.py',
-        r'~\Projects\MailMan\README.md',
+        r'~/MailMan/.gitignore',
+        r'~/MailMan/license.txt',
+        r'~/MailMan/README.md',
+        r'~/MailMan/my_pdf_1.pdf',
+        r'~/MailMan/CamScanner 09-10-2022 13.51.pdf',
     ]
 )
 
@@ -459,11 +463,11 @@ mailman_3 = MailMan(
     msg_type="html",
     subject="Mail Man Test-3 (HTML Message w/  encrypted attachment)",
     attachments=[
-        r'~\MailMan\.gitignore',
-        r'~\MailMan\license.txt',
-        r'~\MailMan\README.md',
-        r'~\MailMan\BITS application form.pdf',
-        r'~\MailMan\CamScanner 09-10-2022 13.51.pdf',
+        r'~/MailMan/.gitignore',
+        r'~/MailMan/license.txt',
+        r'~/MailMan/README.md',
+        r'~/MailMan/my_pdf_1.pdf',
+        r'~/MailMan/CamScanner 09-10-2022 13.51.pdf',
     ],
     encrypt_attachments=True,           # Only works for PDFs
     encryption_password="123",

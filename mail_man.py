@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
 __Description__ = "MailMan: A simple, reliable and fast email package for python"
-__version__ = "0.0.5alpha"
+__version__ = "0.0.6alpha"
 
 """
 
@@ -67,8 +67,10 @@ class MailMan:
     def send_mail(self):
         import smtplib
         import ssl
+        import os
         from email.mime.multipart import MIMEMultipart
         from email.mime.text import MIMEText
+        from pathlib import Path
 
         sender_email = self.sender_email
         sender_password = self.sender_password
@@ -84,7 +86,13 @@ class MailMan:
         if self.attachments:
             for i in range(len(self.attachments)):
                 file_path = self.attachments[i]
-                file_name = file_path.split('\\')[-1]
+                if "/" in file_path:
+                    file_name = file_path.split('/')[-1]
+                elif "\\" in file_path:
+                    file_name = file_path.split('\\')[-1]
+                else:
+                    print("Invalid File-Path")
+                    raise TypeError
                 # Open file in binary mode
                 with open(file_path, "rb") as attachment:
                     if self.encrypt_attachments:
@@ -102,10 +110,15 @@ class MailMan:
                             writer.encrypt(self.encryption_password)
 
                             # Save the new PDF to a file
-                            with open(f"encrypted_{file_name}", "wb+") as f:
+                            is_dir = os.path.isdir("MailMan_Encrypted_Files")
+                            if not is_dir:
+                                os.mkdir("MailMan_Encrypted_Files")
+
+                            path = Path(__file__).parent / f"./MailMan_Encrypted_Files/encrypted_{file_name}"
+                            with open(path, "wb+") as f:
                                 writer.write(f)
 
-                            with open(f"encrypted_{file_name}", "rb") as f:
+                            with open(path, "rb") as f:
                                 self.attach_file(f, f"encrypted_{file_name}", msg)
 
                         else:
