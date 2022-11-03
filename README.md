@@ -63,7 +63,8 @@ Contributor names and contact info
 See [commit history](https://github.com/Theorist-Git/MailMan/commits/master)
 * **1.0.0**
   * Added support for custom smtp servers and ports.
-  * Added project to PYPI
+  * Added project to PYPI.
+  * Users can now give their own path for encrypted files.
 * **0.0.9a**
   * Updated `__str__` method and test.py file 
 * **0.0.8a**

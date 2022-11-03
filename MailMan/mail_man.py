@@ -153,7 +153,7 @@ class MailMan:
                                 with open(path, "rb") as f:
                                     self.attach_file(f, f"Encrypted_{non_pdf_filename}", msg)
                         else:
-                            raise ValueError("Expected an encrypted file directory path.")
+                            raise ValueError("Expected an encrypted file directory (str) path got None")
                     else:
                         self.attach_file(attachment, file_name, msg)
 
