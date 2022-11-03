@@ -3,7 +3,7 @@
 
 * See `test.py` for a quick overview of the package's working.
 
-## Getting Started
+[//]: # (## Getting Started)
 
 [//]: # (### Installation:)
 
