@@ -106,51 +106,54 @@ class MailMan:
                 # Open file in binary mode
                 with open(file_path, "rb") as attachment:
                     if self.encrypt_attachments:
-                        if self.attachments[i].lower().endswith('.pdf'):
-                            from PyPDF2 import PdfReader, PdfWriter
-                            # Create reader and writer object
-                            reader = PdfReader(file_name)
-                            writer = PdfWriter()
+                        if self.encrypted_files_path:
+                            if self.attachments[i].lower().endswith('.pdf'):
+                                from PyPDF2 import PdfReader, PdfWriter
+                                # Create reader and writer object
+                                reader = PdfReader(file_name)
+                                writer = PdfWriter()
 
-                            # Add all pages to the writer
-                            for page in reader.pages:
-                                writer.add_page(page)
+                                # Add all pages to the writer
+                                for page in reader.pages:
+                                    writer.add_page(page)
 
-                            # Add a password to the new PDF
-                            writer.encrypt(self.encryption_password)
+                                # Add a password to the new PDF
+                                writer.encrypt(self.encryption_password)
 
-                            # Save the new PDF to a file
-                            dir_path = os.path.join(self.encrypted_files_path, "MailMan_Encrypted_Files")
-                            is_dir = os.path.isdir(dir_path)
-                            if not is_dir:
-                                os.mkdir(dir_path)
-                            path = os.path.join(self.encrypted_files_path,
-                                                f"MailMan_Encrypted_Files/Encrypted_{file_name}")
-                            with open(path, "wb+") as f:
-                                writer.write(f)
+                                # Save the new PDF to a file
+                                dir_path = os.path.join(self.encrypted_files_path, "MailMan_Encrypted_Files")
+                                is_dir = os.path.isdir(dir_path)
+                                if not is_dir:
+                                    os.mkdir(dir_path)
+                                path = os.path.join(self.encrypted_files_path,
+                                                    f"MailMan_Encrypted_Files/Encrypted_{file_name}")
+                                with open(path, "wb+") as f:
+                                    writer.write(f)
 
-                            with open(path, "rb") as f:
-                                self.attach_file(f, f"Encrypted_{file_name}", msg)
+                                with open(path, "rb") as f:
+                                    self.attach_file(f, f"Encrypted_{file_name}", msg)
 
+                            else:
+                                # Save the new PDF to a file
+                                dir_path = os.path.join(self.encrypted_files_path, "MailMan_Encrypted_Files")
+                                is_dir = os.path.isdir(dir_path)
+                                if not is_dir:
+                                    os.mkdir(dir_path)
+                                non_pdf_filename = f"{file_name.split('.')[0]}.zip"
+                                path = os.path.join(self.encrypted_files_path,
+                                                    f"MailMan_Encrypted_Files/Encrypted_{non_pdf_filename}")
+                                secret_password = self.encryption_password.encode('utf-8')
+
+                                with AESZipFile(path,
+                                                'w',
+                                                compression=ZIP_LZMA,
+                                                encryption=WZ_AES) as zf:
+                                    zf.setpassword(secret_password)
+                                    zf.write(file_path, file_name)
+                                with open(path, "rb") as f:
+                                    self.attach_file(f, f"Encrypted_{non_pdf_filename}", msg)
                         else:
-                            # Save the new PDF to a file
-                            dir_path = os.path.join(self.encrypted_files_path, "MailMan_Encrypted_Files")
-                            is_dir = os.path.isdir(dir_path)
-                            if not is_dir:
-                                os.mkdir(dir_path)
-                            non_pdf_filename = f"{file_name.split('.')[0]}.zip"
-                            path = os.path.join(self.encrypted_files_path,
-                                                f"MailMan_Encrypted_Files/Encrypted_{non_pdf_filename}")
-                            secret_password = self.encryption_password.encode('utf-8')
-
-                            with AESZipFile(path,
-                                            'w',
-                                            compression=ZIP_LZMA,
-                                            encryption=WZ_AES) as zf:
-                                zf.setpassword(secret_password)
-                                zf.write(file_path, file_name)
-                            with open(path, "rb") as f:
-                                self.attach_file(f, f"Encrypted_{non_pdf_filename}", msg)
+                            raise ValueError("Expected an encrypted file directory path.")
                     else:
                         self.attach_file(attachment, file_name, msg)
 

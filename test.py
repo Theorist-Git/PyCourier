@@ -474,6 +474,7 @@ mailman_3 = MailMan(
     ],
     encrypt_attachments=True,           # Only works for PDFs
     encryption_password="123",
+    encrypted_files_path=r"C:\Users\user_1\Desktop\test",
 )
 print(mailman_3)  # Printing the class instance
 
@@ -494,7 +495,8 @@ mailman_4 = MailMan(
     ],
     encrypt_attachments=True,           # Only works for PDFs
     encryption_password="123",
-    smtp_server="smtp.mail.yahoo.com"
+    smtp_server="smtp.mail.yahoo.com",
+    encrypted_files_path=r"C:\Users\user_1\Desktop\test",
 )
 
 print(mailman_4)  # Printing the class instance
