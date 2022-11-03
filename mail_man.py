@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
 __Description__ = "MailMan: A simple, reliable and fast email package for python"
-__version__ = "0.0.6alpha"
+__version__ = "0.0.7alpha"
 
 """
 
@@ -68,6 +68,7 @@ class MailMan:
         import smtplib
         import ssl
         import os
+        from pyzipper import AESZipFile, ZIP_LZMA, WZ_AES
         from email.mime.multipart import MIMEMultipart
         from email.mime.text import MIMEText
         from pathlib import Path
@@ -114,17 +115,30 @@ class MailMan:
                             if not is_dir:
                                 os.mkdir("MailMan_Encrypted_Files")
 
-                            path = Path(__file__).parent / f"./MailMan_Encrypted_Files/encrypted_{file_name}"
+                            path = Path(__file__).parent / f"./MailMan_Encrypted_Files/Encrypted_{file_name}"
                             with open(path, "wb+") as f:
                                 writer.write(f)
 
                             with open(path, "rb") as f:
-                                self.attach_file(f, f"encrypted_{file_name}", msg)
+                                self.attach_file(f, f"Encrypted_{file_name}", msg)
 
                         else:
-                            print(f"\033[91mCan only encrypt pdfs!\033[0m \033[93m{file_name}\033[0m couldn't be "
-                                  f"encrypted")
-                            self.attach_file(attachment, file_name, msg)
+                            # Save the new PDF to a file
+                            is_dir = os.path.isdir("MailMan_Encrypted_Files")
+                            if not is_dir:
+                                os.mkdir("MailMan_Encrypted_Files")
+                            non_pdf_filename = f"{file_name.split('.')[0]}.zip"
+                            path = Path(__file__).parent / f"./MailMan_Encrypted_Files/encrypted_{non_pdf_filename}"
+                            secret_password = self.encryption_password.encode('utf-8')
+
+                            with AESZipFile(path,
+                                            'w',
+                                            compression=ZIP_LZMA,
+                                            encryption=WZ_AES) as zf:
+                                zf.setpassword(secret_password)
+                                zf.write(file_path)
+                            with open(path, "rb") as f:
+                                self.attach_file(f, f"Encrypted_{non_pdf_filename}", msg)
                     else:
                         self.attach_file(attachment, file_name, msg)
 
