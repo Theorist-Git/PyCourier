@@ -22,4 +22,4 @@ __version__ = "1.0.0"
 
 """
 
-from mail_man import MailMan
+from MailMan.mail_man import MailMan

@@ -40,6 +40,7 @@ class MailMan:
             attachments: list = None,
             encrypt_attachments: bool = False,
             encryption_password: str = None,
+            encrypted_files_path: str = None,
             smtp_server: str = "smtp.gmail.com",
             port: int = 465,
     ):
@@ -50,6 +51,7 @@ class MailMan:
         self.message = message
         self.msg_type = msg_type
         self.subject = subject
+        self.encrypted_files_path = encrypted_files_path
         self.attachments = attachments
         self.encrypt_attachments = encrypt_attachments
         self.encryption_password = encryption_password
@@ -79,7 +81,6 @@ class MailMan:
         from pyzipper import AESZipFile, ZIP_LZMA, WZ_AES
         from email.mime.multipart import MIMEMultipart
         from email.mime.text import MIMEText
-        from pathlib import Path
 
         sender_email = self.sender_email
         sender_password = self.sender_password
@@ -119,11 +120,12 @@ class MailMan:
                             writer.encrypt(self.encryption_password)
 
                             # Save the new PDF to a file
-                            is_dir = os.path.isdir("MailMan_Encrypted_Files")
+                            dir_path = os.path.join(self.encrypted_files_path, "MailMan_Encrypted_Files")
+                            is_dir = os.path.isdir(dir_path)
                             if not is_dir:
-                                os.mkdir("MailMan_Encrypted_Files")
-
-                            path = Path(__file__).parent / f"./MailMan_Encrypted_Files/Encrypted_{file_name}"
+                                os.mkdir(dir_path)
+                            path = os.path.join(self.encrypted_files_path,
+                                                f"MailMan_Encrypted_Files/Encrypted_{file_name}")
                             with open(path, "wb+") as f:
                                 writer.write(f)
 
@@ -132,11 +134,13 @@ class MailMan:
 
                         else:
                             # Save the new PDF to a file
-                            is_dir = os.path.isdir("MailMan_Encrypted_Files")
+                            dir_path = os.path.join(self.encrypted_files_path, "MailMan_Encrypted_Files")
+                            is_dir = os.path.isdir(dir_path)
                             if not is_dir:
-                                os.mkdir("MailMan_Encrypted_Files")
+                                os.mkdir(dir_path)
                             non_pdf_filename = f"{file_name.split('.')[0]}.zip"
-                            path = Path(__file__).parent / f"./MailMan_Encrypted_Files/encrypted_{non_pdf_filename}"
+                            path = os.path.join(self.encrypted_files_path,
+                                                f"MailMan_Encrypted_Files/Encrypted_{non_pdf_filename}")
                             secret_password = self.encryption_password.encode('utf-8')
 
                             with AESZipFile(path,
