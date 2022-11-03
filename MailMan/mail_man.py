@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
 __Description__ = "MailMan: A simple, reliable and fast email package for python"
-__version__ = "0.0.9alpha"
+__version__ = "1.0.0"
 
 """
 
@@ -40,6 +40,8 @@ class MailMan:
             attachments: list = None,
             encrypt_attachments: bool = False,
             encryption_password: str = None,
+            smtp_server: str = "smtp.gmail.com",
+            port: int = 465,
     ):
 
         self.sender_email = sender_email
@@ -51,6 +53,8 @@ class MailMan:
         self.attachments = attachments
         self.encrypt_attachments = encrypt_attachments
         self.encryption_password = encryption_password
+        self.smtp_server = smtp_server
+        self.port = port
 
         if msg_type not in self.supported_msg_types:
             raise TypeError("\033[91mUnsupported message type\033[0m")
@@ -64,7 +68,8 @@ class MailMan:
 \033[92mSubject:\033[0m {self.subject},
 \033[92mAttachments:\033[0m {self.attachments if self.attachments else None},
 \033[92mNo. of attachments:\033[0m {len(self.attachments) if self.attachments else None},
-\033[92mEncrypt attachments:\033[0m {self.encrypt_attachments}
+\033[92mEncrypt attachments:\033[0m {self.encrypt_attachments},
+\033[92mSMTP server and Port:\033[0m {self.smtp_server, self.port}
         """
 
     def send_mail(self):
@@ -146,7 +151,7 @@ class MailMan:
                         self.attach_file(attachment, file_name, msg)
 
         context = ssl.create_default_context()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        with smtplib.SMTP_SSL(self.smtp_server, self.port, context=context) as server:
             server.login(sender_email, sender_password)
             server.sendmail(
                 sender_email, recipients, msg.as_string()

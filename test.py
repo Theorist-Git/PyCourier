@@ -1,9 +1,11 @@
-from mail_man import MailMan
+from MailMan.mail_man import MailMan
 import threading
-import time
+# import time
 
-sender = "---"
-password = "---"
+sender = "---@gmail.com"
+password = "---@gmail.com"
+yahoo_sender = "---@yahoo.com"
+yahoo_pwd = "---@yahoo.com"
 recipients = [
     "addr1@eg.com",
     "addr2@eg.com",
@@ -475,6 +477,28 @@ mailman_3 = MailMan(
 )
 print(mailman_3)  # Printing the class instance
 
+# Custom smtp server(yahoo)
+mailman_4 = MailMan(
+    sender_email=yahoo_sender,
+    sender_password=yahoo_pwd,
+    recipients=recipients,
+    message=message_2,
+    msg_type="html",
+    subject="Mail Man Test-4 (HTML Message w/ encrypted attachment and custom smtp server)",
+    attachments=[
+        r'~/MailMan/.gitignore',
+        r'~/MailMan/license.txt',
+        r'~/MailMan/README.md',
+        r'~/MailMan/my_pdf_1.pdf',
+        r'~/MailMan/CamScanner 09-10-2022 13.51.pdf',
+    ],
+    encrypt_attachments=True,           # Only works for PDFs
+    encryption_password="123",
+    smtp_server="smtp.mail.yahoo.com"
+)
+
+print(mailman_4)  # Printing the class instance
+
 # start = time.time()
 # mailman_1.send_mail()
 # mailman_2.send_mail()
@@ -495,13 +519,16 @@ def mail3():
     mailman_3.send_mail()
 
 
+def mail4():
+    mailman_4.send_mail()
+
+
 x = threading.Thread(target=mail1)
 y = threading.Thread(target=mail2)
 z = threading.Thread(target=mail3)
-start = time.time()
+a = threading.Thread(target=mail4)
+
 x.start()
 y.start()
 z.start()
-end = time.time()
-print("Time w/ multithreading = ", end - start)
-# 8s (Less than half)
+a.start()
