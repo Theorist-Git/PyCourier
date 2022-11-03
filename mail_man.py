@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
 __Description__ = "MailMan: A simple, reliable and fast email package for python"
-__version__ = "0.0.8alpha"
+__version__ = "0.0.9alpha"
 
 """
 
@@ -61,7 +61,10 @@ class MailMan:
 \033[92mSender Email:\033[0m {self.sender_email},
 \033[92mReceiver Email:\033[0m {self.recipients},
 \033[92mMessage Type:\033[0m {self.msg_type},
-\033[92mSubject:\033[0m {self.subject}
+\033[92mSubject:\033[0m {self.subject},
+\033[92mAttachments:\033[0m {self.attachments if self.attachments else None},
+\033[92mNo. of attachments:\033[0m {len(self.attachments) if self.attachments else None},
+\033[92mEncrypt attachments:\033[0m {self.encrypt_attachments}
         """
 
     def send_mail(self):

@@ -454,6 +454,7 @@ mailman_2 = MailMan(
         r'~/MailMan/CamScanner 09-10-2022 13.51.pdf',
     ]
 )
+print(mailman_2)  # Printing the class instance
 
 mailman_3 = MailMan(
     sender_email=sender,
@@ -472,6 +473,7 @@ mailman_3 = MailMan(
     encrypt_attachments=True,           # Only works for PDFs
     encryption_password="123",
 )
+print(mailman_3)  # Printing the class instance
 
 # start = time.time()
 # mailman_1.send_mail()
