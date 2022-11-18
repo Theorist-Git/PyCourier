@@ -1,4 +1,4 @@
-from MailMan.mail_man import MailMan
+from PyCourier.py_courier import PyCourier
 import threading
 # import time
 
@@ -16,9 +16,9 @@ recipients = [
 message_1 = """\
 My name is Mayank Vats,
 This is working fine,
-MailMan delivered!!.
+PyCourier delivered!!.
 """
-mailman_1 = MailMan(
+courier_1 = PyCourier(
     sender_email=sender,
     sender_password=password,
     recipients=recipients,
@@ -26,7 +26,7 @@ mailman_1 = MailMan(
     msg_type="plain",
     subject="Mail Man Test-1 (Plain-Text Message)",
 )
-print(mailman_1)  # Printing the class instance
+print(courier_1)  # Printing the class instance
 
 
 # Example of an HTML message with multiple attachments
@@ -441,7 +441,7 @@ message_2 = """\
 </html>
 
 """
-mailman_2 = MailMan(
+courier_2 = PyCourier(
     sender_email=sender,
     sender_password=password,
     recipients=recipients,
@@ -449,16 +449,16 @@ mailman_2 = MailMan(
     msg_type="html",
     subject="Mail Man Test-2 (HTML Message w/ attachment)",
     attachments=[
-        r'~/MailMan/.gitignore',
-        r'~/MailMan/license.txt',
-        r'~/MailMan/README.md',
-        r'~/MailMan/my_pdf_1.pdf',
-        r'~/MailMan/CamScanner 09-10-2022 13.51.pdf',
+        r'~/PyCourier/.gitignore',
+        r'~/PyCourier/license.txt',
+        r'~/PyCourier/README.md',
+        r'~/PyCourier/my_pdf_1.pdf',
+        r'~/PyCourier/CamScanner 09-10-2022 13.51.pdf',
     ]
 )
-print(mailman_2)  # Printing the class instance
+print(courier_2)  # Printing the class instance
 
-mailman_3 = MailMan(
+courier_3 = PyCourier(
     sender_email=sender,
     sender_password=password,
     recipients=recipients,
@@ -466,20 +466,20 @@ mailman_3 = MailMan(
     msg_type="html",
     subject="Mail Man Test-3 (HTML Message w/  encrypted attachment)",
     attachments=[
-        r'~/MailMan/.gitignore',
-        r'~/MailMan/license.txt',
-        r'~/MailMan/README.md',
-        r'~/MailMan/my_pdf_1.pdf',
-        r'~/MailMan/CamScanner 09-10-2022 13.51.pdf',
+        r'~/PyCourier/.gitignore',
+        r'~/PyCourier/license.txt',
+        r'~/PyCourier/README.md',
+        r'~/PyCourier/my_pdf_1.pdf',
+        r'~/PyCourier/CamScanner 09-10-2022 13.51.pdf',
     ],
     encrypt_attachments=True,           # Only works for PDFs
     encryption_password="123",
     encrypted_files_path=r"C:\Users\user_1\Desktop\test",
 )
-print(mailman_3)  # Printing the class instance
+print(courier_3)  # Printing the class instance
 
 # Custom smtp server(yahoo)
-mailman_4 = MailMan(
+courier_4 = PyCourier(
     sender_email=yahoo_sender,
     sender_password=yahoo_pwd,
     recipients=recipients,
@@ -487,11 +487,11 @@ mailman_4 = MailMan(
     msg_type="html",
     subject="Mail Man Test-4 (HTML Message w/ encrypted attachment and custom smtp server)",
     attachments=[
-        r'~/MailMan/.gitignore',
-        r'~/MailMan/license.txt',
-        r'~/MailMan/README.md',
-        r'~/MailMan/my_pdf_1.pdf',
-        r'~/MailMan/CamScanner 09-10-2022 13.51.pdf',
+        r'~/PyCourier/.gitignore',
+        r'~/PyCourier/license.txt',
+        r'~/PyCourier/README.md',
+        r'~/PyCourier/my_pdf_1.pdf',
+        r'~/PyCourier/CamScanner 09-10-2022 13.51.pdf',
     ],
     encrypt_attachments=True,           # Only works for PDFs
     encryption_password="123",
@@ -499,36 +499,36 @@ mailman_4 = MailMan(
     encrypted_files_path=r"C:\Users\user_1\Desktop\test",
 )
 
-print(mailman_4)  # Printing the class instance
+print(courier_4)  # Printing the class instance
 
 # start = time.time()
-# mailman_1.send_mail()
-# mailman_2.send_mail()
-# mailman_3.send_mail()
+# courier_1.send_courier()
+# courier_2.send_courier()
+# courier_3.send_courier()
 # end = time.time()
 # Time w/o multithreading/processing =  20.64133882522583s
 
 
-def mail1():
-    mailman_1.send_mail()
+def courier1():
+    courier_1.send_courier()
 
 
-def mail2():
-    mailman_2.send_mail()
+def courier2():
+    courier_2.send_courier()
 
 
-def mail3():
-    mailman_3.send_mail()
+def courier3():
+    courier_3.send_courier()
 
 
-def mail4():
-    mailman_4.send_mail()
+def courier4():
+    courier_4.send_courier()
 
 
-x = threading.Thread(target=mail1)
-y = threading.Thread(target=mail2)
-z = threading.Thread(target=mail3)
-a = threading.Thread(target=mail4)
+x = threading.Thread(target=courier1)
+y = threading.Thread(target=courier2)
+z = threading.Thread(target=courier3)
+a = threading.Thread(target=courier4)
 
 x.start()
 y.start()

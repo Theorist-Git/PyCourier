@@ -17,13 +17,13 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
-__Description__ = "MailMan: A simple, reliable and fast email package for python"
+__Description__ = "PyCourier: A simple, reliable and fast email package for python"
 __version__ = "1.0.0"
 
 """
 
 
-class MailMan:
+class PyCourier:
     supported_msg_types = [
         "plain",
         "html"
@@ -63,7 +63,7 @@ class MailMan:
 
     def __str__(self):
 
-        return f"""\033[95mClass MailMan:\033[0m
+        return f"""\033[95mClass PyCourier:\033[0m
 \033[92mSender Email:\033[0m {self.sender_email},
 \033[92mReceiver Email:\033[0m {self.recipients},
 \033[92mMessage Type:\033[0m {self.msg_type},
@@ -74,7 +74,7 @@ class MailMan:
 \033[92mSMTP server and Port:\033[0m {self.smtp_server, self.port}
         """
 
-    def send_mail(self):
+    def send_courier(self):
         import smtplib
         import ssl
         import os
@@ -121,12 +121,12 @@ class MailMan:
                                 writer.encrypt(self.encryption_password)
 
                                 # Save the new PDF to a file
-                                dir_path = os.path.join(self.encrypted_files_path, "MailMan_Encrypted_Files")
+                                dir_path = os.path.join(self.encrypted_files_path, "PyCourier_Encrypted_Files")
                                 is_dir = os.path.isdir(dir_path)
                                 if not is_dir:
                                     os.mkdir(dir_path)
                                 path = os.path.join(self.encrypted_files_path,
-                                                    f"MailMan_Encrypted_Files/Encrypted_{file_name}")
+                                                    f"PyCourier_Encrypted_Files/Encrypted_{file_name}")
                                 with open(path, "wb+") as f:
                                     writer.write(f)
 
@@ -135,13 +135,13 @@ class MailMan:
 
                             else:
                                 # Save the new PDF to a file
-                                dir_path = os.path.join(self.encrypted_files_path, "MailMan_Encrypted_Files")
+                                dir_path = os.path.join(self.encrypted_files_path, "PyCourier_Encrypted_Files")
                                 is_dir = os.path.isdir(dir_path)
                                 if not is_dir:
                                     os.mkdir(dir_path)
                                 non_pdf_filename = f"{file_name.split('.')[0]}.zip"
                                 path = os.path.join(self.encrypted_files_path,
-                                                    f"MailMan_Encrypted_Files/Encrypted_{non_pdf_filename}")
+                                                    f"PyCourier_Encrypted_Files/Encrypted_{non_pdf_filename}")
                                 secret_password = self.encryption_password.encode('utf-8')
 
                                 with AESZipFile(path,

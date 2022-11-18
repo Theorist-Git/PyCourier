@@ -1,4 +1,4 @@
-# MailMan: 
+# PyCourier: 
 ### A simple, reliable and fast email package for python
 
 * See `test.py` for a quick overview of the package's working.
@@ -60,7 +60,7 @@ Contributor names and contact info
   * Email: dev-theorist.e5xna@simplelogin.com
 
 ## Version History
-See [commit history](https://github.com/Theorist-Git/MailMan/commits/master)
+See [commit history](https://github.com/Theorist-Git/PyCourier/commits/master)
 * **1.0.0**
   * Added support for custom smtp servers and ports.
   * Added project to PYPI.
