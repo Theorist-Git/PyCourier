@@ -3,51 +3,21 @@
 
 * See `test.py` for a quick overview of the package's working.
 
-[//]: # (## Getting Started)
+## Getting Started
 
-[//]: # (### Installation:)
+### Installation:
 
-[//]: # ()
-[//]: # (* Use the package manager [pip]&#40;https://pip.pypa.io/en/stable/&#41; to install the python modules required.)
 
-[//]: # (```bash)
+* Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the python modules required.
 
-[//]: # ($ pip install AuthAlpha)
+```bash
+$ pip install PyCourier
+```
 
-[//]: # (```)
 
-[//]: # ()
-[//]: # (### Usage:)
+### Usage:
 
-[//]: # (* See the [Tests]&#40;https://github.com/Theorist-Git/AuthAlpha/tree/master/Tests&#41;)
-
-[//]: # (directory to see the detailed usage of every class and method.)
-
-[//]: # (* [Authalpha.py]&#40;https://github.com/Theorist-Git/AuthAlpha/blob/master/AuthAlpha.py&#41; file contains the workarounds for the possible errors)
-
-[//]: # (you might encounter.)
-
-[//]: # (### Supported hash types:)
-
-[//]: # ()
-[//]: # (#### For passwords:)
-
-[//]: # (1. [argon2id]&#40;https://en.wikipedia.org/wiki/Argon2&#41;)
-
-[//]: # (2. [PBKDF2:SHA family]&#40;https://en.wikipedia.org/wiki/PBKDF2&#41;)
-
-[//]: # (3. [bcrypt]&#40;https://en.wikipedia.org/wiki/Bcrypt&#41;)
-
-[//]: # (4. [scrypt]&#40;https://en.wikipedia.org/wiki/Scrypt&#41;)
-
-[//]: # ()
-[//]: # (#### For Generating File Hashes:)
-
-[//]: # (1. [SHA1]&#40;https://en.wikipedia.org/wiki/SHA-1&#41;)
-
-[//]: # (2. [SHA2]&#40;https://en.wikipedia.org/wiki/SHA-2&#41;)
-
-[//]: # (3. [SHA3]&#40;https://en.wikipedia.org/wiki/SHA-3&#41;)
+* See the test.py
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
