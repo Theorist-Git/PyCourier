@@ -63,6 +63,8 @@ See [commit history](https://github.com/Theorist-Git/PyCourier/commits/master)
     * Initial Release
 
 * **P.S: 0.1a means version 0.1 alpha**
+### Known Issue: 
+#### Use 7z to extract files on linux if "Invalid lzma data" error is shown during extraction.
 
 ## Documentation
 #### TBD

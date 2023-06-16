@@ -3,6 +3,7 @@ __pycache__
 *.pyc
 *.pdf
 *.zip
+*.env
 dist
 MANIFEST
 setup.cfg
