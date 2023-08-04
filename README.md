@@ -31,6 +31,12 @@ Contributor names and contact info
 
 ## Version History
 See [commit history](https://github.com/Theorist-Git/PyCourier/commits/master)
+* **1.1.0**
+  * Switched to pathlib for managing paths.
+  * Split send_courier method into 2 to reduce nesting and improve readability.
+  * Multiple directories can now be created by PyCourier if specified file paths contain more than one non-existent
+  directory.
+
 * **1.0.0**
   * Added support for custom smtp servers and ports.
   * Added project to PYPI.
@@ -63,8 +69,6 @@ See [commit history](https://github.com/Theorist-Git/PyCourier/commits/master)
     * Initial Release
 
 * **P.S: 0.1a means version 0.1 alpha**
-### Known Issue: 
-#### Use 7z to extract files on linux if "Invalid lzma data" error is shown during extraction.
 
 ## Documentation
 #### TBD

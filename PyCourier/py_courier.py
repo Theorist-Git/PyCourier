@@ -1,5 +1,5 @@
 """
-Copyright (C) 2022 Mayank Vats
+Copyright (C) 2022-2023 Mayank Vats
 See license.txt
 
 This program is free software: you can redistribute it and/or modify
@@ -18,9 +18,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
 __Description__ = "PyCourier: A simple, reliable and fast email package for python"
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 """
+
+from pathlib import Path
 
 
 class PyCourier:
@@ -74,11 +76,98 @@ class PyCourier:
 \033[92mSMTP server and Port:\033[0m {self.smtp_server, self.port}
         """
 
-    def send_courier(self):
+    def encrypt_attachment(self, file_path: str) -> Path:
+        """
+        Creates encrypted files directory if it doesn't exist.
+
+        Treats .pdf files differently, encrypts them using PyPDF2
+        Rest of the files are zipped and encrypted with AES using
+        PyZipper.
+
+        :param file_path: Takes a string i.e. the path of file to be encrypted
+        :return: pathlib.Path object of the encrypted file
+        """
+
+        if not self.encrypted_files_path:
+            # Providing a directory to store encrypted files is required.
+            raise ValueError("Expected an encrypted file directory (str) path got None")
+
+        # abc.extension
+        file_name = Path(file_path).name
+
+        # path/to/somewhere/PyCourier_Encrypted_Files
+        dir_path = Path(self.encrypted_files_path, "PyCourier_Encrypted_Files")
+
+        if not dir_path.is_dir():
+            dir_path.mkdir(parents=True, exist_ok=True)
+
+        if file_name.endswith(".pdf"):
+
+            from PyPDF2 import PdfReader, PdfWriter
+            # Create reader and writer object
+            reader = PdfReader(file_path)
+            writer = PdfWriter()
+
+            # Add all pages to the writer
+            for page in reader.pages:
+                writer.add_page(page)
+
+            # Add a password to the new PDF
+            writer.encrypt(self.encryption_password)
+
+            # Save the new PDF to a file
+            path = Path(dir_path, f"Encrypted_{file_name}")
+
+            with open(path, "wb+") as f:
+                writer.write(f)
+
+            return path
+
+        else:
+            from pyzipper import AESZipFile, ZIP_LZMA, WZ_AES
+
+            non_pdf_filename = f"{Path(file_path).stem}.zip"
+            path = Path(dir_path, f"Encrypted_{non_pdf_filename}")
+            secret_password = self.encryption_password.encode('utf-8')
+
+            with AESZipFile(path,
+                            'w',
+                            compression=ZIP_LZMA,
+                            encryption=WZ_AES) as zf:
+
+                zf.setpassword(secret_password)
+                zf.write(file_path, file_name)
+
+            return path
+
+    @staticmethod
+    def attach_file(file_path: Path, msg_object):
+        from email.mime.base import MIMEBase
+        from email import encoders
+
+        file_name = file_path.name
+
+        with open(file_path, "rb") as f:
+            # Add file as application/octet-stream
+            # Email client can usually download this automatically as attachment
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(f.read())
+            # Encode file in ASCII characters to send by email
+            encoders.encode_base64(part)
+
+            # Add header as key/value pair to attachment part
+            part.add_header(
+                "Content-Disposition",
+                f"attachment; filename= {file_name}",
+            )
+
+            # Add attachment to message and convert message to string
+            msg_object.attach(part)
+
+    def send_courier(self) -> None:
         import smtplib
         import ssl
-        import os
-        from pyzipper import AESZipFile, ZIP_LZMA, WZ_AES
+
         from email.mime.multipart import MIMEMultipart
         from email.mime.text import MIMEText
 
@@ -94,93 +183,16 @@ class PyCourier:
         msg.attach(MIMEText(self.message, self.msg_type))
 
         if self.attachments:
-            for i in range(len(self.attachments)):
-                file_path = self.attachments[i]
-                if "/" in file_path:
-                    file_name = file_path.split('/')[-1]
-                elif "\\" in file_path:
-                    file_name = file_path.split('\\')[-1]
-                else:
-                    print("Invalid File-Path")
-                    raise TypeError
-                # Open file in binary mode
-                with open(file_path, "rb") as attachment:
-                    if self.encrypt_attachments:
-                        if self.encrypted_files_path:
-                            if self.attachments[i].lower().endswith('.pdf'):
-                                from PyPDF2 import PdfReader, PdfWriter
-                                # Create reader and writer object
-                                reader = PdfReader(file_name)
-                                writer = PdfWriter()
-
-                                # Add all pages to the writer
-                                for page in reader.pages:
-                                    writer.add_page(page)
-
-                                # Add a password to the new PDF
-                                writer.encrypt(self.encryption_password)
-
-                                # Save the new PDF to a file
-                                dir_path = os.path.join(self.encrypted_files_path, "PyCourier_Encrypted_Files")
-                                is_dir = os.path.isdir(dir_path)
-                                if not is_dir:
-                                    os.mkdir(dir_path)
-                                path = os.path.join(self.encrypted_files_path,
-                                                    f"PyCourier_Encrypted_Files/Encrypted_{file_name}")
-                                with open(path, "wb+") as f:
-                                    writer.write(f)
-
-                                with open(path, "rb") as f:
-                                    self.attach_file(f, f"Encrypted_{file_name}", msg)
-
-                            else:
-                                # Save the new PDF to a file
-                                dir_path = os.path.join(self.encrypted_files_path, "PyCourier_Encrypted_Files")
-                                is_dir = os.path.isdir(dir_path)
-                                if not is_dir:
-                                    os.mkdir(dir_path)
-                                non_pdf_filename = f"{file_name.split('.')[0]}.zip"
-                                path = os.path.join(self.encrypted_files_path,
-                                                    f"PyCourier_Encrypted_Files/Encrypted_{non_pdf_filename}")
-                                secret_password = self.encryption_password.encode('utf-8')
-
-                                with AESZipFile(path,
-                                                'w',
-                                                compression=ZIP_LZMA,
-                                                encryption=WZ_AES) as zf:
-                                    zf.setpassword(secret_password)
-                                    zf.write(file_path, file_name)
-                                with open(path, "rb") as f:
-                                    self.attach_file(f, f"Encrypted_{non_pdf_filename}", msg)
-                        else:
-                            raise ValueError("Expected an encrypted file directory (str) path got None")
-                    else:
-                        self.attach_file(attachment, file_name, msg)
+            if self.encrypt_attachments:
+                for file_path in self.attachments:
+                    enc_path = self.encrypt_attachment(file_path)
+                    self.attach_file(enc_path, msg)
+            else:
+                from pathlib import Path
+                for file_path in self.attachments:
+                    self.attach_file(Path(file_path), msg)
 
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL(self.smtp_server, self.port, context=context) as server:
             server.login(sender_email, sender_password)
-            server.sendmail(
-                sender_email, recipients, msg.as_string()
-            )
-
-    @staticmethod
-    def attach_file(opened_file_object, file_name: str, msg_object):
-        from email.mime.base import MIMEBase
-        from email import encoders
-
-        # Add file as application/octet-stream
-        # Email client can usually download this automatically as attachment
-        part = MIMEBase("application", "octet-stream")
-        part.set_payload(opened_file_object.read())
-        # Encode file in ASCII characters to send by email
-        encoders.encode_base64(part)
-
-        # Add header as key/value pair to attachment part
-        part.add_header(
-            "Content-Disposition",
-            f"attachment; filename= {file_name}",
-        )
-
-        # Add attachment to message and convert message to string
-        msg_object.attach(part)
+            server.sendmail(sender_email, recipients, msg.as_string())

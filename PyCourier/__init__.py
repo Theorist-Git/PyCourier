@@ -1,5 +1,5 @@
 """
-Copyright (C) 2022 Mayank Vats
+Copyright (C) 2022-2023 Mayank Vats
 See license.txt
 
 This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
 __Description__ = "PyCourier: A simple, reliable and fast email package for python"
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 """
 
