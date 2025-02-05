@@ -9,3 +9,5 @@ MANIFEST
 setup.cfg
 setup.py
 test_local.py
+pypi_upload.sh
+pycourier-venv

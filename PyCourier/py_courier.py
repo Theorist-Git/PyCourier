@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
 __Description__ = "PyCourier: A simple, reliable and fast email package for python"
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 """
 
@@ -26,10 +26,10 @@ from pathlib import Path
 
 
 class PyCourier:
-    supported_msg_types = [
+    supported_msg_types = (
         "plain",
         "html"
-    ]
+    )
 
     def __init__(
             self,
@@ -90,35 +90,36 @@ class PyCourier:
 
         if not self.encrypted_files_path:
             # Providing a directory to store encrypted files is required.
-            raise ValueError("Expected an encrypted file directory (str) path got None")
+            raise ValueError("Expected an encrypted file directory (str format) path got None")
 
-        # abc.extension
+        # path/to/file.extension = > file.extension i.e. The final path component.
+        # Gets the name of the file to be encrypted.
         file_name = Path(file_path).name
 
         # path/to/somewhere/PyCourier_Encrypted_Files
+        # Appends `PyCourier_Encrypted_Files` to `encrypted_files_path`.
+        # This is where a copy of encrypted files is stored.
         dir_path = Path(self.encrypted_files_path, "PyCourier_Encrypted_Files")
 
         if not dir_path.is_dir():
-            dir_path.mkdir(parents=True, exist_ok=True)
+            # Will create the directory including its parents.
+            # similar to mkdir -p
+            dir_path.mkdir(parents=True)
 
         if file_name.endswith(".pdf"):
 
-            from PyPDF2 import PdfReader, PdfWriter
+            from pypdf import PdfReader, PdfWriter
             # Create reader and writer object
             reader = PdfReader(file_path)
-            writer = PdfWriter()
-
-            # Add all pages to the writer
-            for page in reader.pages:
-                writer.add_page(page)
+            writer = PdfWriter(clone_from=reader)
 
             # Add a password to the new PDF
-            writer.encrypt(self.encryption_password)
+            writer.encrypt(self.encryption_password, algorithm="AES-256-R5")
 
             # Save the new PDF to a file
             path = Path(dir_path, f"Encrypted_{file_name}")
 
-            with open(path, "wb+") as f:
+            with Path.open(path, "wb+") as f:
                 writer.write(f)
 
             return path
@@ -126,6 +127,7 @@ class PyCourier:
         else:
             from pyzipper import AESZipFile, ZIP_LZMA, WZ_AES
 
+            # .stem returns the final path component, minus its last suffix.
             non_pdf_filename = f"{Path(file_path).stem}.zip"
             path = Path(dir_path, f"Encrypted_{non_pdf_filename}")
             secret_password = self.encryption_password.encode('utf-8')
@@ -141,7 +143,7 @@ class PyCourier:
             return path
 
     @staticmethod
-    def attach_file(file_path: Path, msg_object):
+    def attach_file(file_path: Path, msg_object) -> None:
         from email.mime.base import MIMEBase
         from email import encoders
 
@@ -193,6 +195,11 @@ class PyCourier:
                     self.attach_file(Path(file_path), msg)
 
         context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(self.smtp_server, self.port, context=context) as server:
-            server.login(sender_email, sender_password)
-            server.sendmail(sender_email, recipients, msg.as_string())
+
+        try:
+            with smtplib.SMTP_SSL(self.smtp_server, self.port, context=context) as server:
+                server.login(sender_email, sender_password)
+                server.sendmail(sender_email, recipients, msg.as_string())
+
+        except smtplib.SMTPException as e:
+            raise RuntimeError("Failed to send email.") from e

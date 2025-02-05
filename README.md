@@ -31,6 +31,8 @@ Contributor names and contact info
 
 ## Version History
 See [commit history](https://github.com/Theorist-Git/PyCourier/commits/master)
+* **1.2.0**
+  * Deprecated PyPDF2 due to an unpatched [vulnerability](https://github.com/advisories/GHSA-4vvm-4w3v-6mr8). Switched to pypdf, the API remains the same.
 * **1.1.0**
   * Switched to pathlib for managing paths.
   * Split send_courier method into 2 to reduce nesting and improve readability.
