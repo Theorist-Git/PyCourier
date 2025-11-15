@@ -66,22 +66,22 @@ class PyCourier:
             raise ValueError("Missing sender email environment variable")
 
         if not sender_password_env:
-            raise ValueError("\Missing sender password environment variable")
+            raise ValueError("Missing sender password environment variable")
 
         if encrypt_attachments and not encryption_password_env:
             raise ValueError("Missing encryption password environment variable")
 
     def __str__(self):
 
-        return f"""\033[95mClass PyCourier:\033[0m
-\033[92mSender Email:\033[0m {self.sender_email_env},
-\033[92mReceiver Email:\033[0m {self.recipients},
-\033[92mMessage Type:\033[0m {self.msg_type},
-\033[92mSubject:\033[0m {self.subject},
-\033[92mAttachments:\033[0m {self.attachments if self.attachments else None},
-\033[92mNo. of attachments:\033[0m {len(self.attachments) if self.attachments else None},
-\033[92mEncrypt attachments:\033[0m {self.encrypt_attachments},
-\033[92mSMTP server and Port:\033[0m {self.smtp_server, self.port}
+        return f"""Class PyCourier:
+Sender Email: {self.sender_email_env},
+Receiver Email: {self.recipients},
+Message Type: {self.msg_type},
+Subject: {self.subject},
+Attachments: {self.attachments if self.attachments else None},
+No. of attachments: {len(self.attachments) if self.attachments else None},
+Encrypt attachments: {self.encrypt_attachments},
+SMTP server and Port: {self.smtp_server, self.port}
         """
 
     @staticmethod
