@@ -23,7 +23,7 @@ __version__ = "1.2.0"
 """
 
 from pathlib import Path
-
+from os import getenv
 
 class PyCourier:
     supported_msg_types = (
@@ -33,8 +33,8 @@ class PyCourier:
 
     def __init__(
             self,
-            sender_email: str,
-            sender_password: str,
+            sender_email_env: str,
+            sender_password_env: str,
             recipients: list,
             message: str,
             msg_type: str,
@@ -47,8 +47,8 @@ class PyCourier:
             port: int = 465,
     ):
 
-        self.sender_email = sender_email
-        self.sender_password = sender_password
+        self.sender_email_env = sender_email_env
+        self.sender_password_env = sender_password_env
         self.recipients = recipients
         self.message = message
         self.msg_type = msg_type
@@ -63,10 +63,16 @@ class PyCourier:
         if msg_type not in self.supported_msg_types:
             raise TypeError("\033[91mUnsupported message type\033[0m")
 
+        if not sender_email_env:
+            raise ValueError("\033[91mMissing sender email environment variable\033[0m")
+
+        if not sender_password_env:
+            raise ValueError("\033[91mMissing sender password environment variable\033[0m")
+
     def __str__(self):
 
         return f"""\033[95mClass PyCourier:\033[0m
-\033[92mSender Email:\033[0m {self.sender_email},
+\033[92mSender Email:\033[0m {self.sender_email_env},
 \033[92mReceiver Email:\033[0m {self.recipients},
 \033[92mMessage Type:\033[0m {self.msg_type},
 \033[92mSubject:\033[0m {self.subject},
@@ -80,7 +86,7 @@ class PyCourier:
         """
         Creates encrypted files directory if it doesn't exist.
 
-        Treats .pdf files differently, encrypts them using PyPDF2
+        Treats .pdf files differently, encrypts them using pypdf
         Rest of the files are zipped and encrypted with AES using
         PyZipper.
 
@@ -166,15 +172,25 @@ class PyCourier:
             # Add attachment to message and convert message to string
             msg_object.attach(part)
 
+    @staticmethod
+    def _get_env_var(var: str):
+        result = getenv(var)
+
+        if not result:
+            raise RuntimeError(f"Environment variable {var} not set")
+
+        return result
+
     def send_courier(self) -> None:
-        import smtplib
-        import ssl
+        from smtplib import SMTP_SSL, SMTPException
+        from ssl import create_default_context
 
         from email.mime.multipart import MIMEMultipart
         from email.mime.text import MIMEText
 
-        sender_email = self.sender_email
-        sender_password = self.sender_password
+        sender_email = self._get_env_var(self.sender_email_env)
+        sender_password = self._get_env_var(self.sender_password_env)
+
         recipients = self.recipients
 
         msg = MIMEMultipart()
@@ -194,12 +210,12 @@ class PyCourier:
                 for file_path in self.attachments:
                     self.attach_file(Path(file_path), msg)
 
-        context = ssl.create_default_context()
+        context = create_default_context()
 
         try:
-            with smtplib.SMTP_SSL(self.smtp_server, self.port, context=context) as server:
+            with SMTP_SSL(self.smtp_server, self.port, context=context) as server:
                 server.login(sender_email, sender_password)
                 server.sendmail(sender_email, recipients, msg.as_string())
 
-        except smtplib.SMTPException as e:
+        except SMTPException as e:
             raise RuntimeError("Failed to send email.") from e
