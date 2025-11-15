@@ -18,7 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "dev-theorist.e5xna@simplelogin.com"
 __Description__ = "PyCourier: A simple, reliable and fast email package for python"
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 """
 

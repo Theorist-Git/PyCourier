@@ -1,26 +1,30 @@
 from PyCourier.py_courier import PyCourier
 import threading
-# import time
+from dotenv import load_dotenv
 
-sender = "---@gmail.com"
-password = "---@gmail.com"
-yahoo_sender = "---@yahoo.com"
-yahoo_pwd = "---@yahoo.com"
+
+load_dotenv()
 recipients = [
-    "addr1@eg.com",
-    "addr2@eg.com",
+    "-------@gmail.com",
+    "-------@pm.me",
+    # "123@sdfljk.com",   # Invalid Email Address(will be ignored)
+]
+
+attachments = [
+    r'/home/theorist/Desktop/Programming/python/PyCourier/.gitignore',
+    r'/home/theorist/Desktop/Programming/python/PyCourier/license.txt',
+    r'/home/theorist/Desktop/nptel_7th_sem.pdf',
 ]
 
 
 # Example of a plain-text email with no attachments
 message_1 = """\
-My name is Mayank Vats,
 This is working fine,
 PyCourier delivered!!.
 """
 courier_1 = PyCourier(
-    sender_email=sender,
-    sender_password=password,
+    sender_email_env="SENDER",
+    sender_password_env="PASSWORD",
     recipients=recipients,
     message=message_1,
     msg_type="plain",
@@ -442,71 +446,30 @@ message_2 = """\
 
 """
 courier_2 = PyCourier(
-    sender_email=sender,
-    sender_password=password,
+    sender_email_env="SENDER",
+    sender_password_env="PASSWORD",
     recipients=recipients,
     message=message_2,
     msg_type="html",
     subject="Mail Man Test-2 (HTML Message w/ attachment)",
-    attachments=[
-        r'~/PyCourier/.gitignore',
-        r'~/PyCourier/license.txt',
-        r'~/PyCourier/README.md',
-        r'~/PyCourier/my_pdf_1.pdf',
-        r'~/PyCourier/CamScanner 09-10-2022 13.51.pdf',
-    ]
+    attachments=attachments
 )
+
 print(courier_2)  # Printing the class instance
 
 courier_3 = PyCourier(
-    sender_email=sender,
-    sender_password=password,
+    sender_email_env="SENDER",
+    sender_password_env="PASSWORD",
     recipients=recipients,
     message=message_2,
     msg_type="html",
-    subject="Mail Man Test-3 (HTML Message w/  encrypted attachment)",
-    attachments=[
-        r'~/PyCourier/.gitignore',
-        r'~/PyCourier/license.txt',
-        r'~/PyCourier/README.md',
-        r'~/PyCourier/my_pdf_1.pdf',
-        r'~/PyCourier/CamScanner 09-10-2022 13.51.pdf',
-    ],
-    encrypt_attachments=True,           # Only works for PDFs
-    encryption_password="123",
-    encrypted_files_path=r"C:\Users\user_1\Desktop\test",
+    subject="Mail Man Test-3 (HTML Message w/ encrypted attachment)",
+    attachments=attachments,
+    encrypt_attachments=True,
+    encryption_password_env="ENC_PASS",
 )
+
 print(courier_3)  # Printing the class instance
-
-# Custom smtp server(yahoo)
-courier_4 = PyCourier(
-    sender_email=yahoo_sender,
-    sender_password=yahoo_pwd,
-    recipients=recipients,
-    message=message_2,
-    msg_type="html",
-    subject="Mail Man Test-4 (HTML Message w/ encrypted attachment and custom smtp server)",
-    attachments=[
-        r'~/PyCourier/.gitignore',
-        r'~/PyCourier/license.txt',
-        r'~/PyCourier/README.md',
-        r'~/PyCourier/my_pdf_1.pdf',
-        r'~/PyCourier/CamScanner 09-10-2022 13.51.pdf',
-    ],
-    encrypt_attachments=True,           # Only works for PDFs
-    encryption_password="123",
-    smtp_server="smtp.mail.yahoo.com",
-    encrypted_files_path=r"C:\Users\user_1\Desktop\test",
-)
-
-print(courier_4)  # Printing the class instance
-
-# start = time.time()
-# courier_1.send_courier()
-# courier_2.send_courier()
-# courier_3.send_courier()
-# end = time.time()
-# Time w/o multithreading/processing =  20.64133882522583s
 
 
 def courier1():
@@ -521,16 +484,10 @@ def courier3():
     courier_3.send_courier()
 
 
-def courier4():
-    courier_4.send_courier()
-
-
 x = threading.Thread(target=courier1)
 y = threading.Thread(target=courier2)
 z = threading.Thread(target=courier3)
-a = threading.Thread(target=courier4)
 
 x.start()
 y.start()
 z.start()
-a.start()
