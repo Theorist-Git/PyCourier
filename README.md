@@ -85,4 +85,4 @@ See [commit history](https://github.com/Theorist-Git/PyCourier/commits/master)
 
 This project is licensed under the [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/#) License - see LICENSE.txt file for more details.
 
-Copyright (C) 2022 Mayank Vats
+Copyright (C) 2025 Mayank Vats
