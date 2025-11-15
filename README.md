@@ -1,4 +1,5 @@
 # PyCourier: 
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/pycourier?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/pycourier)
 ### A simple, reliable and fast email package for python
 
 * See `test.py` for a quick overview of the package's working.
