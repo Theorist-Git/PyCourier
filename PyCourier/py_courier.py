@@ -24,6 +24,7 @@ __version__ = "1.2.0"
 
 from pathlib import Path
 from os import getenv
+from tempfile import TemporaryDirectory
 
 class PyCourier:
     supported_msg_types = (
@@ -41,8 +42,7 @@ class PyCourier:
             subject: str,
             attachments: list = None,
             encrypt_attachments: bool = False,
-            encryption_password: str = None,
-            encrypted_files_path: str = None,
+            encryption_password_env: str = None,
             smtp_server: str = "smtp.gmail.com",
             port: int = 465,
     ):
@@ -53,21 +53,23 @@ class PyCourier:
         self.message = message
         self.msg_type = msg_type
         self.subject = subject
-        self.encrypted_files_path = encrypted_files_path
         self.attachments = attachments
         self.encrypt_attachments = encrypt_attachments
-        self.encryption_password = encryption_password
+        self.encryption_password_env = encryption_password_env
         self.smtp_server = smtp_server
         self.port = port
 
         if msg_type not in self.supported_msg_types:
-            raise TypeError("\033[91mUnsupported message type\033[0m")
+            raise TypeError("Unsupported message type")
 
         if not sender_email_env:
-            raise ValueError("\033[91mMissing sender email environment variable\033[0m")
+            raise ValueError("Missing sender email environment variable")
 
         if not sender_password_env:
-            raise ValueError("\033[91mMissing sender password environment variable\033[0m")
+            raise ValueError("\Missing sender password environment variable")
+
+        if encrypt_attachments and not encryption_password_env:
+            raise ValueError("Missing encryption password environment variable")
 
     def __str__(self):
 
@@ -82,7 +84,16 @@ class PyCourier:
 \033[92mSMTP server and Port:\033[0m {self.smtp_server, self.port}
         """
 
-    def encrypt_attachment(self, file_path: str) -> Path:
+    @staticmethod
+    def _get_env_var(var: str):
+        result = getenv(var)
+
+        if not result:
+            raise RuntimeError(f"Environment variable {var} not set")
+
+        return result
+
+    def encrypt_attachment(self, file_path: Path, temp_dir: Path) -> Path:
         """
         Creates encrypted files directory if it doesn't exist.
 
@@ -91,28 +102,15 @@ class PyCourier:
         PyZipper.
 
         :param file_path: Takes a string i.e. the path of file to be encrypted
+        :param temp_dir: Takes a string i.e. the path of temp directory to store encrypted files
         :return: pathlib.Path object of the encrypted file
         """
 
-        if not self.encrypted_files_path:
-            # Providing a directory to store encrypted files is required.
-            raise ValueError("Expected an encrypted file directory (str format) path got None")
-
         # path/to/file.extension = > file.extension i.e. The final path component.
         # Gets the name of the file to be encrypted.
-        file_name = Path(file_path).name
+        file_name = file_path.name
 
-        # path/to/somewhere/PyCourier_Encrypted_Files
-        # Appends `PyCourier_Encrypted_Files` to `encrypted_files_path`.
-        # This is where a copy of encrypted files is stored.
-        dir_path = Path(self.encrypted_files_path, "PyCourier_Encrypted_Files")
-
-        if not dir_path.is_dir():
-            # Will create the directory including its parents.
-            # similar to mkdir -p
-            dir_path.mkdir(parents=True)
-
-        if file_name.endswith(".pdf"):
+        if file_name.lower().endswith(".pdf"):
 
             from pypdf import PdfReader, PdfWriter
             # Create reader and writer object
@@ -120,10 +118,10 @@ class PyCourier:
             writer = PdfWriter(clone_from=reader)
 
             # Add a password to the new PDF
-            writer.encrypt(self.encryption_password, algorithm="AES-256-R5")
+            writer.encrypt(self._get_env_var(self.encryption_password_env), algorithm="AES-256-R5")
 
             # Save the new PDF to a file
-            path = Path(dir_path, f"Encrypted_{file_name}")
+            path = Path(temp_dir, f"Encrypted_{file_name}")
 
             with Path.open(path, "wb+") as f:
                 writer.write(f)
@@ -134,9 +132,9 @@ class PyCourier:
             from pyzipper import AESZipFile, ZIP_LZMA, WZ_AES
 
             # .stem returns the final path component, minus its last suffix.
-            non_pdf_filename = f"{Path(file_path).stem}.zip"
-            path = Path(dir_path, f"Encrypted_{non_pdf_filename}")
-            secret_password = self.encryption_password.encode('utf-8')
+            non_pdf_filename = f"{file_path.name}.zip"
+            path = Path(temp_dir, f"Encrypted_{non_pdf_filename}")
+            secret_password = self._get_env_var(self.encryption_password_env).encode('utf-8')
 
             with AESZipFile(path,
                             'w',
@@ -172,15 +170,6 @@ class PyCourier:
             # Add attachment to message and convert message to string
             msg_object.attach(part)
 
-    @staticmethod
-    def _get_env_var(var: str):
-        result = getenv(var)
-
-        if not result:
-            raise RuntimeError(f"Environment variable {var} not set")
-
-        return result
-
     def send_courier(self) -> None:
         from smtplib import SMTP_SSL, SMTPException
         from ssl import create_default_context
@@ -200,14 +189,12 @@ class PyCourier:
 
         msg.attach(MIMEText(self.message, self.msg_type))
 
-        if self.attachments:
-            if self.encrypt_attachments:
+        with TemporaryDirectory() as temp_dir:
+            if self.attachments:
                 for file_path in self.attachments:
-                    enc_path = self.encrypt_attachment(file_path)
-                    self.attach_file(enc_path, msg)
-            else:
-                from pathlib import Path
-                for file_path in self.attachments:
+                    if self.encrypt_attachments:
+                        file_path = self.encrypt_attachment(Path(file_path), Path(temp_dir))
+
                     self.attach_file(Path(file_path), msg)
 
         context = create_default_context()
